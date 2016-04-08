@@ -1,7 +1,8 @@
 package utils
 
 import (
-	"fmt"
+	"sort"
+	"strconv"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -49,12 +50,10 @@ func RequestSpotInstance() {
 // Need a function to check the status "marked-for-termination" and make necessary changes and Request a new Spot instance withing 2 minutes.
 // http://169.254.169.254/latest/meta-data/spot/termination-time
 
-// EvaluateSpotPriceHistory will evaluate prices, returns the instance type and the max bid to be used
-// Availibility Zone - us-east-1
+// EvaluateSpotPriceHistory will evaluate prices, returns the instance type, region and the max bid to be used
 // Max Budget is 0.028$ per hour for all instances.
-func EvaluateSpotPriceHistory(svc *ec2.EC2) {
+func EvaluateSpotPriceHistory(svc *ec2.EC2, budget float64) EvaluateSpotPriceHistoryOutput {
 
-	// Budget
 	// Give current Price and suggest "how likely" the price is going to exceed the budget or not.
 
 	params := &ec2.DescribeSpotPriceHistoryInput{
@@ -62,7 +61,7 @@ func EvaluateSpotPriceHistory(svc *ec2.EC2) {
 		Filters: []*ec2.Filter{
 			{ // Availibility Zone
 				Name:   aws.String("availability-zone"),
-				Values: []*string{aws.String("us-east-1?")},
+				Values: []*string{aws.String("us-east-1?")}, // Availibility Zone - us-east-1
 			},
 			{ // Instance Types
 				Name: aws.String("instance-type"),
@@ -84,15 +83,24 @@ func EvaluateSpotPriceHistory(svc *ec2.EC2) {
 		},
 		StartTime: aws.Time(time.Now()), // setting now will give current spot prices
 	}
-	resp, err := svc.DescribeSpotPriceHistory(params)
 
-	if err != nil {
-		// Print the error, cast err to awserr.Error to get the Code and
-		// Message from an error.
-		fmt.Println(err.Error())
-		return
-	}
+	resp, _ := svc.DescribeSpotPriceHistory(params)
 
 	// Pretty-print the response data.
-	fmt.Println(resp)
+	// fmt.Println(resp)
+	var espho SpotInstanceDetails
+	var output EvaluateSpotPriceHistoryOutput
+	for _, sph := range resp.SpotPriceHistory { // range over the response
+
+		if i, _ := strconv.ParseFloat(*sph.SpotPrice, 64); i < budget { // convert to float64 and check if it is less than budget
+
+			// add values to struct
+			espho.AvailibiltyZone = *sph.AvailabilityZone
+			espho.InstanceType = *sph.InstanceType
+			espho.SpotPrice = *sph.SpotPrice
+			output = append(output, espho) // append to the slice
+		}
+	}
+	sort.Sort(output) // Sorting on the basis of SpotPrice
+	return output
 }
