@@ -40,6 +40,9 @@ func GetRunningSpotInstanceIds(svc *ec2.EC2) []string {
 }
 
 // TerminateSpotInstance will terminate the spot instance
+func TerminateSpotInstance() {
+
+}
 
 // RequestSpotInstance will request an instance based on current spot price in a particular region.
 // Also include waiting to see if the request is fulfilled or not, otherwise make another request
@@ -47,8 +50,11 @@ func RequestSpotInstance() {
 
 }
 
-// Need a function to check the status "marked-for-termination" and make necessary changes and Request a new Spot instance withing 2 minutes.
+// CheckTerminationMeta to check the status "marked-for-termination" and make necessary changes and Request a new Spot instance withing 2 minutes.
 // http://169.254.169.254/latest/meta-data/spot/termination-time
+func CheckTerminationMeta() {
+
+}
 
 // EvaluateSpotPriceHistory will evaluate prices, returns the instance type, region and the max bid to be used
 // Max Budget is 0.028$ per hour for all instances.
