@@ -12,6 +12,9 @@ import (
 
 func main() {
 
+	// Need to read various contants from a file
+	// Need to ask for user input to do various tasks
+
 	budget := 0.0268
 	svc := ec2.New(session.New(), &aws.Config{Region: aws.String("us-east-1")})
 	// fmt.Printf("%T\n %v", svc, svc)
