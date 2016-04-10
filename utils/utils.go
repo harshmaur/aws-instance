@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 	"time"
@@ -27,7 +28,7 @@ func GetRunningSpotInstanceIds(svc *ec2.EC2) []string {
 		},
 	}
 
-	resp, _ := svc.DescribeInstances(params)
+	resp, _ := svc.DescribeInstances(params) // Error handling to do
 
 	var instanceIds []string
 	for i := range resp.Reservations {
@@ -40,8 +41,15 @@ func GetRunningSpotInstanceIds(svc *ec2.EC2) []string {
 }
 
 // TerminateSpotInstance will terminate the spot instance
-func TerminateSpotInstance() {
+func TerminateSpotInstance(svc *ec2.EC2, instanceID string) {
 
+	params := &ec2.TerminateInstancesInput{
+		InstanceIds: []*string{aws.String(instanceID)},
+	}
+	resp, _ := svc.TerminateInstances(params) // Error handling to do
+
+	// Pretty-print the response data.
+	fmt.Println(resp)
 }
 
 // RequestSpotInstance will request an instance based on current spot price in a particular region.
@@ -60,7 +68,7 @@ func CheckTerminationMeta() {
 // Max Budget is 0.028$ per hour for all instances.
 func EvaluateSpotPriceHistory(svc *ec2.EC2, budget float64) EvaluateSpotPriceHistoryOutput {
 
-	// Give current Price and suggest "how likely" the price is going to exceed the budget or not.
+	// PENDING::Give current Price and suggest "how likely" the price is going to exceed the budget or not.
 
 	params := &ec2.DescribeSpotPriceHistoryInput{
 		EndTime: aws.Time(time.Now()),
@@ -90,7 +98,7 @@ func EvaluateSpotPriceHistory(svc *ec2.EC2, budget float64) EvaluateSpotPriceHis
 		StartTime: aws.Time(time.Now()), // setting now will give current spot prices
 	}
 
-	resp, _ := svc.DescribeSpotPriceHistory(params)
+	resp, _ := svc.DescribeSpotPriceHistory(params) // Error handling to do
 
 	// Pretty-print the response data.
 	// fmt.Println(resp)
