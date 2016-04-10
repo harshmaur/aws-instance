@@ -54,8 +54,22 @@ func TerminateSpotInstance(svc *ec2.EC2, instanceID string) {
 
 // RequestSpotInstance will request an instance based on current spot price in a particular region.
 // Also include waiting to see if the request is fulfilled or not, otherwise make another request
-func RequestSpotInstance() {
+func RequestSpotInstance(svc *ec2.EC2, rsi RequestSpotInput) {
+	params := &ec2.RequestSpotInstancesInput{
+		SpotPrice:             aws.String(rsi.SpotPrice), // Required
+		AvailabilityZoneGroup: aws.String(rsi.AvailibiltyZoneGroup),
+		LaunchSpecification: &ec2.RequestSpotLaunchSpecification{
+			ImageId:          aws.String(rsi.ImageID),
+			InstanceType:     aws.String(rsi.InstanceType),
+			KeyName:          aws.String(rsi.KeyName),
+			SecurityGroupIds: []*string{aws.String(rsi.SecurityGroupID)},
+			UserData:         aws.String(rsi.UserData),
+		},
+	}
+	resp, _ := svc.RequestSpotInstances(params) // Error handling to do
 
+	// Pretty-print the response data.
+	fmt.Println(resp)
 }
 
 // CheckTerminationMeta to check the status "marked-for-termination" and make necessary changes and Request a new Spot instance withing 2 minutes.

@@ -33,3 +33,14 @@ func (e EvaluateSpotPriceHistoryOutput) Less(i, j int) bool {
 	right, _ := strconv.ParseFloat(e[j].SpotPrice, 64)
 	return left < right
 }
+
+// RequestSpotInput is used in requesting spot instances.
+type RequestSpotInput struct {
+	SpotPrice            string
+	AvailibiltyZoneGroup string
+	ImageID              string
+	InstanceType         string
+	KeyName              string
+	SecurityGroupID      string
+	UserData             string
+}

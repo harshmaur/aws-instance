@@ -29,4 +29,10 @@ func main() {
 	bs, _ := json.MarshalIndent(out, "", "    ") // this will add indentation for pretty printing
 	fmt.Println(string(bs))
 
+	// Terminate an instance
+	// utils.TerminateSpotInstance(svc, "someID")
+
+	// Request an instance
+	rsi := utils.RequestSpotInput{}
+	utils.RequestSpotInstance(svc, rsi)
 }
