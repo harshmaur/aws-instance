@@ -27,11 +27,11 @@ func main() {
 	for {
 		// Ask for user input to do various tasks
 		fmt.Printf(`1) Get Running Spot Instances
-	2) Evaluate Price History
-	3) Request a Spot Instance
-	4) Termination and Instance
-	5) Exit
-	Enter your input: `)
+2) Evaluate Price History
+3) Request a Spot Instance
+4) Termination and Instance
+5) Exit
+Enter your input: `)
 
 		fmt.Scan(&input) // Scan the Input
 
